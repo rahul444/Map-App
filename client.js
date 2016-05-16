@@ -25,16 +25,14 @@ var SearchBar = React.createClass({
   }
 });
 
-ReactDOM.render(
-  <SearchBar />,
-  document.getElementById('app')
-);
+ReactDOM.render(<SearchBar />, document.getElementById('app'));
 
 function search(zip) {
     $.get('/search', {zipcode : zip},
       function(data) {
-        console.log('lon: ' + data['lon']);
-        console.log('lat: ' + data['lat']);
+        for (var i = 0; i < data.length; i++) {
+            console.log(data[i]);
+        }
       }
     );
 }
