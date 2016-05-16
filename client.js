@@ -25,14 +25,36 @@ var SearchBar = React.createClass({
   }
 });
 
-ReactDOM.render(<SearchBar />, document.getElementById('app'));
+var LocationComponent = React.createClass({
+    render: function() {
+        return (
+            <h1>Name of Location: {this.props.name}</h1>
+        );
+    }
+});
+
+ReactDOM.render(
+    <div>
+        <SearchBar />
+        <LocationComponent name = "De Anza" />
+    </div>,
+    document.getElementById('app'));
+
 
 function search(zip) {
     $.get('/search', {zipcode : zip},
       function(data) {
-        for (var i = 0; i < data.length; i++) {
-            console.log(data[i]);
+        if (data.length == 0) {
+            alert('Invalid zipcode, try again');
+        } else {
+            displayLocations(data);
         }
       }
     );
+}
+
+function displayLocations(data) {
+    for (var i = 0; i < data.length; i++) {
+        console.log(data[i]);
+    }
 }

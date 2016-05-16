@@ -21,17 +21,19 @@ app.get('/search', function(req, res) {
             str += chunk;
         });
         res2.on('end', function() {
-            var data = JSON.parse(str);
             var arr = [];
-            var venues = data['response']['venues'];
-            for (var i = 0; i < venues.length; i++) {
-                var venue = venues[i];
-                var location = {};
-                location['name'] = venue['name'];
-                location['address'] = venue['location']['address'];
-                // only add locations with an address
-                if (location['address']) {
-                    arr.push(location);
+            if (res2.statusCode == 200) {
+                var data = JSON.parse(str);
+                var venues = data['response']['venues'];
+                for (var i = 0; i < venues.length; i++) {
+                    var venue = venues[i];
+                    var location = {};
+                    location['name'] = venue['name'];
+                    location['address'] = venue['location']['address'];
+                    // only add locations with an address
+                    if (location['address']) {
+                        arr.push(location);
+                    }
                 }
             }
             res.send(arr);
