@@ -29,10 +29,15 @@ app.get('/search', function(req, res) {
                 for (var i = 0; i < venues.length; i++) {
                     var venue = venues[i];
                     var location = {};
-                    location['name'] = venue['name'];
-                    location['address'] = venue['location']['address'];
-                    // only add locations with an address
-                    if (location['address']) {
+                    if (venue['location']['address'] && venue['categories'][0]) {
+                        location['name'] = venue['name'];
+                        location['address'] = venue['location']['address'];
+                        location['type'] = venue['categories'][0]['name'];
+                        if (venue['contact']['phone']) {
+                            location['contact'] = venue['contact']['phone'];
+                        } else {
+                            location['contact'] = 'N/A';
+                        }
                         arr.push(location);
                     }
                 }
