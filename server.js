@@ -19,6 +19,11 @@ connection.connect(function(err) {
   console.log('You are now connected...');
 });
 
+app.get('/views', function(req, res) {
+    console.log('Views: ' + req['query']['views']);
+    res.send('SUCCESS');
+})
+
 app.get('/comment', function(req, res) {
     console.log(req['query']['venue'] + ':');
     console.log(req['query']['name'] + ' - ' + req['query']['comment']);
@@ -50,7 +55,10 @@ app.get('/search', function(req, res) {
                     var venue = venues[i];
                     var location = {};
                     if (venue['location']['address'] && venue['categories'][0]) {
-                        location['comments'] = [venue['name'] + ' comment num 1', venue['name'] + ' comment num 2'];
+                        // SET FROM DB
+                        location['comments'] = [{name: 'Josh', comment: 'I love the city'}, {name: venue['name'], comment:'comment num 2'}];
+                        location['views'] = 1;
+
                         location['name'] = venue['name'];
                         location['address'] = venue['location']['address'];
                         location['type'] = venue['categories'][0]['name'];

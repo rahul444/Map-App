@@ -42,24 +42,41 @@ var VenueList = React.createClass({
 
 var VenueItem = React.createClass({
     getInitialState: function() {
-        return {exanded: false};
+        return {exanded: false, views: this.props.venue.views, comments: this.props.venue.comments};
     },
 
     expandInfo: function() {
+        if (this.state.expanded === false) {
+            incrementViews(this.state.views + 1);
+            this.setState({
+                expanded: true,
+                views: this.state.views + 1
+            });
+        } else {
+            this.setState({
+                expanded: !this.state.expanded
+            });
+        }
+    },
+
+    updateCommentList: function(comment) {
+        var arr = this.state.comments.slice();
+        arr.push(comment);
         this.setState({
-            expanded: !this.state.expanded
-        });
+            comments: arr
+        })
     },
 
     getMoreInfo: function() {
         if (this.state.expanded) {
             return <div style={{marginTop: '-15px'}}>
+                <span>Views: {this.state.views}</span>
                 <ul>
                     <li style={{listStyleType: 'none'}}>Address: {this.props.venue.address}</li>
                     <li style={{listStyleType: 'none'}}>Category: {this.props.venue.type}</li>
                     <li style={{listStyleType: 'none'}}>Contact: {this.props.venue.contact}</li>
                 </ul>
-                <CommentList comments={this.props.venue.comments}/>
+                <CommentList comments={this.state.comments}/>
                 <CommentBox onComment={this.handleComment} />
             </div>;
         } else {
@@ -73,8 +90,9 @@ var VenueItem = React.createClass({
         } else if (comp.state.value.length < 1) {
             alert('Please enter a comment');
         } else {
-            comment(this.props.venue.name, comp.state.name, comp.state.value);
-            // TODO implement adding comment to CommentList
+            comment(this.props.venue.name, comp.state.name, comp.state.value, this.state.views);
+            // adds comment object to commentlist component
+            this.updateCommentList({name: comp.state.name, comment: comp.state.value});
             // TODO implment storing comments in db
             // TODO implment rendering comments from db on reload
         }
@@ -94,11 +112,14 @@ var VenueItem = React.createClass({
 var CommentList = React.createClass({
     render: function() {
         return(
-            <div style={{marginTop: '15px', marginBottom:'10px', height:'400px', width:'504px', overflowY:'auto', border:'2px solid #2E8B57'}}>
-                {this.props.comments.map((c) => {
-                    return <div style={{width:'448px', height:'70px', border:'1px solid #000', marginTop:'1px', marginLeft:'18px'}}>{c}</div>
-                })}
-            </div>
+            <span>
+                <h3 style={{color:'#2E8B57', marginBottom:'-8px'}}>Comments:</h3>
+                <div style={{marginTop: '15px', marginBottom:'10px', height:'400px', width:'504px', overflowY:'auto', border:'2px solid #2E8B57'}}>
+                    {this.props.comments.map((c) => {
+                        return <div style={{width:'448px', height:'70px', border:'1px solid #000', marginTop:'1px', marginLeft:'18px'}}>{c.name} - {c.comment}</div>
+                    })}
+                </div>
+            </span>
         )
     }
 });
@@ -151,8 +172,16 @@ function search(query) {
     );
 }
 
-function comment(venueName, user, text) {
-    $.get('/comment', {venue: venueName, name: user, comment: text},
+function comment(venueName, user, text, views) {
+    $.get('/comment', {venue: venueName, name: user, comment: text, views: views},
+        function(res) {
+            console.log(res);
+        }
+    );
+}
+
+function incrementViews(views) {
+    $.get('/views', {views: views},
         function(res) {
             console.log(res);
         }
