@@ -59,7 +59,7 @@ var VenueItem = React.createClass({
                     <li style={{listStyleType: 'none'}}>Category: {this.props.venue.type}</li>
                     <li style={{listStyleType: 'none'}}>Contact: {this.props.venue.contact}</li>
                 </ul>
-                <CommentList />
+                <CommentList comments={this.props.venue.comments}/>
                 <CommentBox onComment={this.handleComment} />
             </div>;
         } else {
@@ -68,7 +68,16 @@ var VenueItem = React.createClass({
     },
 
     handleComment: function(comp, event) {
-        alert(comp.state.value);
+        if (comp.state.name.length < 1) {
+            alert('Please enter name');
+        } else if (comp.state.value.length < 1) {
+            alert('Please enter a comment');
+        } else {
+            comment(this.props.venue.name, comp.state.name, comp.state.value);
+            // TODO implement adding comment to CommentList
+            // TODO implment storing comments in db
+            // TODO implment rendering comments from db on reload
+        }
     },
 
     render: function() {
@@ -85,7 +94,11 @@ var VenueItem = React.createClass({
 var CommentList = React.createClass({
     render: function() {
         return(
-            <h4>complete comments</h4>
+            <div style={{marginTop: '15px', marginBottom:'10px', height:'400px', width:'504px', overflowY:'auto', border:'2px solid #2E8B57'}}>
+                {this.props.comments.map((c) => {
+                    return <div style={{width:'448px', height:'70px', border:'1px solid #000', marginTop:'1px', marginLeft:'18px'}}>{c}</div>
+                })}
+            </div>
         )
     }
 });
@@ -93,7 +106,8 @@ var CommentList = React.createClass({
 var CommentBox = React.createClass({
     getInitialState: function() {
       return {
-        value: ""
+        name: '',
+        value: ''
       };
     },
 
@@ -103,11 +117,17 @@ var CommentBox = React.createClass({
       });
     },
 
+    handleNameChange: function(evt) {
+        this.setState({
+            name: evt.target.value
+        });
+    },
+
     render: function() {
         return (
             <form>
                 <div>
-                    <br></br>
+                    Name: <input onChange={this.handleNameChange} placeholder='Enter name' style={{marginBottom:'3px'}} /> <br></br>
                     <textarea placeholder='Enter a comment here.' id='comments' rows='4' cols='50' onChange={this.handleChange} ></textarea>
                 </div>
                 <button type='button' onClick={this.props.onComment.bind(null, this)}>Comment</button>
@@ -131,11 +151,15 @@ function search(query) {
     );
 }
 
-function displayLocations(data) {
-    for (var i = 0; i < data.length; i++) {
-        console.log(data[i]);
-    }
+function comment(venueName, user, text) {
+    $.get('/comment', {venue: venueName, name: user, comment: text},
+        function(res) {
+            console.log(res);
+        }
+    );
+}
 
+function displayLocations(data) {
     ReactDOM.render(
         <div>
             <SearchBar />
