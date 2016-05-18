@@ -10,13 +10,16 @@ var connection = mysql.createConnection({
   host: 'localhost',
   port: '8080',
   user: 'my_user',
-  password: 'some_secret',
+  password: 'my_secret',
   database: 'app_database'
 });
 
 connection.connect(function(err) {
-  if (err) console.log(err);
-  console.log('You are now connected...');
+  if (err) {
+    console.log(err);
+  } else {
+    console.log('You are now connected...');
+  }
 });
 
 app.get('/views', function(req, res) {
@@ -25,8 +28,11 @@ app.get('/views', function(req, res) {
 })
 
 app.get('/comment', function(req, res) {
-    console.log(req['query']['venue'] + ':');
-    console.log(req['query']['name'] + ' - ' + req['query']['comment']);
+    // TODO add to top of db
+    console.log('VENUE: ' + req['query']['venue'] + ':');
+    console.log('COMMENT: ' + req['query']['name'] + ' - ' + req['query']['comment']);
+    console.log('ID: ' + req['query']['id']);
+
     res.send('SUCCESS');
 });
 
@@ -56,7 +62,7 @@ app.get('/search', function(req, res) {
                     var location = {};
                     if (venue['location']['address'] && venue['categories'][0]) {
                         // SET FROM DB
-                        location['comments'] = [{name: 'Josh', comment: 'I love the city'}, {name: venue['name'], comment:'comment num 2'}];
+                        location['comments'] = [{name: 'Josh', comment: 'I love the city', id: 2}, {name: venue['name'], comment:'comment num 1', id: 1}];
                         location['views'] = 1;
 
                         location['name'] = venue['name'];

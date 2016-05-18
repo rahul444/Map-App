@@ -61,7 +61,7 @@ var VenueItem = React.createClass({
 
     updateCommentList: function(comment) {
         var arr = this.state.comments.slice();
-        arr.push(comment);
+        arr.unshift(comment);
         this.setState({
             comments: arr
         })
@@ -69,7 +69,7 @@ var VenueItem = React.createClass({
 
     getMoreInfo: function() {
         if (this.state.expanded) {
-            return <div style={{marginTop: '-15px'}}>
+            return <div style={{marginTop: '-15px', marginLeft: '25px'}}>
                 <span>Views: {this.state.views}</span>
                 <ul>
                     <li style={{listStyleType: 'none'}}>Address: {this.props.venue.address}</li>
@@ -90,9 +90,10 @@ var VenueItem = React.createClass({
         } else if (comp.state.value.length < 1) {
             alert('Please enter a comment');
         } else {
-            comment(this.props.venue.name, comp.state.name, comp.state.value, this.state.views);
+            var commentId = this.state.comments.length + 1;
+            comment(this.props.venue.name, comp.state.name, comp.state.value, this.state.views, commentId);
             // adds comment object to commentlist component
-            this.updateCommentList({name: comp.state.name, comment: comp.state.value});
+            this.updateCommentList({name: comp.state.name, comment: comp.state.value, id: commentId});
             // TODO implment storing comments in db
             // TODO implment rendering comments from db on reload
         }
@@ -116,7 +117,7 @@ var CommentList = React.createClass({
                 <h3 style={{color:'#2E8B57', marginBottom:'-8px'}}>Comments:</h3>
                 <div style={{marginTop: '15px', marginBottom:'10px', height:'400px', width:'504px', overflowY:'auto', border:'2px solid #2E8B57'}}>
                     {this.props.comments.map((c) => {
-                        return <div style={{width:'448px', height:'70px', border:'1px solid #000', marginTop:'1px', marginLeft:'18px'}}>{c.name} - {c.comment}</div>
+                        return <div style={{width:'448px', height:'70px', border:'1px solid #000', marginTop:'1px', marginLeft:'18px'}}>{c.name} - {c.comment} -- {c.id}</div>
                     })}
                 </div>
             </span>
@@ -172,8 +173,8 @@ function search(query) {
     );
 }
 
-function comment(venueName, user, text, views) {
-    $.get('/comment', {venue: venueName, name: user, comment: text, views: views},
+function comment(venueName, user, text, views, id) {
+    $.get('/comment', {venue: venueName, name: user, comment: text, views: views, id: id},
         function(res) {
             console.log(res);
         }
