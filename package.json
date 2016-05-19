@@ -21,7 +21,7 @@
     "https": "1.0.0",
     "querystring": "0.2.0",
     "mysql": "2.10.2",
-    "async": "2.0.x"
+    "async": "2.0.0-rc.5"
   },
   "homepage": "https://github.com/rahul444/Map-App#readme"
 }
