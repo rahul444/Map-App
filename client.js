@@ -17,8 +17,9 @@ var SearchBar = React.createClass({
 
   render: function() {
     return (
-      <div>
-        <input value={this.state.value} onChange={this.handleChange} placeholder='Search by Zipcode or City' />
+      <div style={{width: '100%', height:'55px', backgroundColor:'#54C769'}}>
+        <span style={{position:'absolute', fontSize:'44px', color:'white'}}>Venue Search</span>
+        <input value={this.state.value} onChange={this.handleChange} placeholder='Search by Zipcode or City' style={{marginLeft:'40%', marginTop:'25px'}} />
         <button type='button' onClick={this.handleInput}>Search</button>
       </div>
     );
@@ -47,7 +48,7 @@ var VenueItem = React.createClass({
 
     expandInfo: function() {
         if (this.state.expanded === false) {
-            incrementViews(this.state.views + 1);
+            incrementViews(this.props.venue.name, this.state.views + 1);
             this.setState({
                 expanded: true,
                 views: this.state.views + 1
@@ -69,11 +70,12 @@ var VenueItem = React.createClass({
 
     getMoreInfo: function() {
         if (this.state.expanded) {
-            return <div style={{marginTop: '-15px', marginLeft: '25px'}}>
-                <span>Views: {this.state.views}</span>
+            return <div style={{marginTop:'-15px', marginLeft:'25px'}}>
+                <span style={{color:'#2E8B57', fontSize:'18px'}}>More Info:</span>
                 <ul>
+                    <li style={{listStyleType: 'none'}}>Views: {this.state.views}</li>
                     <li style={{listStyleType: 'none'}}>Address: {this.props.venue.address}</li>
-                    <li style={{listStyleType: 'none'}}>Category: {this.props.venue.type}</li>
+                    <li style={{listStyleType: 'none'}}>Type: {this.props.venue.type}</li>
                     <li style={{listStyleType: 'none'}}>Contact: {this.props.venue.contact}</li>
                 </ul>
                 <CommentList comments={this.state.comments}/>
@@ -94,7 +96,6 @@ var VenueItem = React.createClass({
             comment(this.props.venue.name, comp.state.name, comp.state.value, this.state.views, commentId);
             // adds comment object to commentlist component
             this.updateCommentList({name: comp.state.name, comment: comp.state.value, id: commentId});
-            // TODO implment storing comments in db
             // TODO implment rendering comments from db on reload
         }
     },
@@ -103,7 +104,7 @@ var VenueItem = React.createClass({
         var moreInfo = this.getMoreInfo();
         return (
             <li style={{listStyleType: 'none'}}>
-                <h3 onClick={this.expandInfo} style={{color: 'green'}}>{this.props.venue.name}</h3>
+                <h3 onClick={this.expandInfo} style={{color:'green'}}>{this.props.venue.name}</h3>
                 {moreInfo}
             </li>
         );
@@ -113,14 +114,17 @@ var VenueItem = React.createClass({
 var CommentList = React.createClass({
     render: function() {
         return(
-            <span>
-                <h3 style={{color:'#2E8B57', marginBottom:'-8px'}}>Comments:</h3>
-                <div style={{marginTop: '15px', marginBottom:'10px', height:'400px', width:'504px', overflowY:'auto', border:'2px solid #2E8B57'}}>
+            <div style={{marginTop:'8px'}}>
+                <span style={{color:'#2E8B57', fontSize:'18px'}}>Comments:</span>
+                <div style={{marginTop: '8px', marginBottom:'10px', height:'400px', width:'504px', overflowY:'auto', border:'2px solid #2E8B57'}}>
                     {this.props.comments.map((c) => {
-                        return <div style={{width:'448px', height:'70px', border:'1px solid #000', marginTop:'1px', marginLeft:'18px'}}>{c.name} - {c.comment} -- {c.id}</div>
+                        return <div style={{width:'448px', height:'75px', border:'1px solid #000', overflowY:'auto',
+                         marginTop:'1px', marginLeft:'18px'}}>{c.comment}<br></br>
+                                <span style={{color:'grey', fontStyle:'italic'}}>- {c.name}</span>
+                         </div>
                     })}
                 </div>
-            </span>
+            </div>
         )
     }
 });
@@ -181,8 +185,8 @@ function comment(venueName, user, text, views, id) {
     );
 }
 
-function incrementViews(views) {
-    $.get('/views', {views: views},
+function incrementViews(name, views) {
+    $.get('/views', {venueName: name, views: views},
         function(res) {
             console.log(res);
         }

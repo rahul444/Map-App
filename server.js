@@ -4,14 +4,14 @@ var http = require('https');
 var escapeStr = require('querystring');
 var mysql = require('mysql');
 app.use('/', express.static(__dirname + '/'));
-app.listen(8080);
+app.listen(8000);
 
 var connection = mysql.createConnection({
   host: 'localhost',
   port: '8080',
-  user: 'my_user',
-  password: 'my_secret',
-  database: 'app_database'
+  user: 'root',
+  password: 'my_password',
+  database: 'app_db'
 });
 
 connection.connect(function(err) {
@@ -23,17 +23,35 @@ connection.connect(function(err) {
 });
 
 app.get('/views', function(req, res) {
-    console.log('Views: ' + req['query']['views']);
-    res.send('SUCCESS');
-})
+    var name = req['query']['venueName'];
+    connection.query("INSERT INTO Views (`venueName`, `views`) VALUES (" + "'" + name + "', " + "2) ON DUPLICATE KEY UPDATE views = views + 1;",
+        function(err, result) {
+            if (err) {
+                console.error(err);
+                res.send('FAILURE: Views not uploaded');
+            } else {
+                // console.log(result);
+                res.send('SUCCESS: Views updated');
+            }
+        });
+});
 
 app.get('/comment', function(req, res) {
-    // TODO add to top of db
-    console.log('VENUE: ' + req['query']['venue'] + ':');
-    console.log('COMMENT: ' + req['query']['name'] + ' - ' + req['query']['comment']);
-    console.log('ID: ' + req['query']['id']);
+    var comment = {
+        venueName: req['query']['venue'],
+        name: req['query']['name'],
+        comment: req['query']['comment'],
+        time: req['query']['id']
+    }
 
-    res.send('SUCCESS');
+    connection.query('INSERT INTO Comments SET ?', comment, function(err, result) {
+        if (err) {
+            console.error(err);
+        } else {
+            // console.log(result);
+            res.send('SUCCESS Comment updated');
+        }
+    });
 });
 
 app.get('/search', function(req, res) {
@@ -57,6 +75,8 @@ app.get('/search', function(req, res) {
                 // TODO put comments associated with venue into data object
                 var data = JSON.parse(str);
                 var venues = data['response']['venues'];
+                // var commentList = getCommentList(venues);
+                // var viewList = getViewList(venues);
                 for (var i = 0; i < venues.length; i++) {
                     var venue = venues[i];
                     var location = {};
@@ -64,6 +84,9 @@ app.get('/search', function(req, res) {
                         // SET FROM DB
                         location['comments'] = [{name: 'Josh', comment: 'I love the city', id: 2}, {name: venue['name'], comment:'comment num 1', id: 1}];
                         location['views'] = 1;
+                        // location['comments'] = commentList[i];
+                        // location['views'] = viewList[i];
+
 
                         location['name'] = venue['name'];
                         location['address'] = venue['location']['address'];
