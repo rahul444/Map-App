@@ -25,7 +25,8 @@ connection.connect(function(err) {
 
 app.get('/views', function(req, res) {
     var name = escapeStr.escape(req['query']['venueName']);
-    connection.query("INSERT INTO Views (`venueName`, `views`) VALUES (" + "'" + name + "', " + "2) ON DUPLICATE KEY UPDATE views = views + 1;",
+    connection.query("INSERT INTO Views (`venueName`, `views`) VALUES (" + "'" + name + "', " + "2)" +
+        "ON DUPLICATE KEY UPDATE views = views + 1;",
         function(err, result) {
             if (err) {
                 console.error(err);
@@ -103,6 +104,8 @@ app.get('/search', function(req, res) {
                 }, function(err) {
                     res.send(newArr);
                 });
+            } else {
+                res.send([]);
             }
         });
     }).on('error', function(e) {
@@ -113,7 +116,8 @@ app.get('/search', function(req, res) {
 
 function getComments(venue, done) {
     var commentList = [];
-    connection.query("SELECT * FROM Comments WHERE venueName = '" + escapeStr.escape(venue['name']) + "' ORDER BY time DESC", function(err, result){
+    connection.query("SELECT * FROM Comments WHERE venueName = '" + escapeStr.escape(venue['name']) +
+        "' ORDER BY time DESC", function(err, result){
         if (err) {
             console.error(err);
             return done(err);
@@ -129,7 +133,8 @@ function getComments(venue, done) {
 
 // ASYNC Method
 function getViews(venue, done) {
-    connection.query("SELECT * FROM Views WHERE venueName = '" + escapeStr.escape(venue['name']) + "'", function(err, result) {
+    connection.query("SELECT * FROM Views WHERE venueName = '" + escapeStr.escape(venue['name']) +
+        "'", function(err, result) {
         if (err) {
             console.error(err);
             return done(err);

@@ -19,7 +19,8 @@ var SearchBar = React.createClass({
     return (
       <div style={{width: '100%', height:'55px', backgroundColor:'#54C769'}}>
         <span style={{position:'absolute', fontSize:'44px', color:'white'}}>Venue Search</span>
-        <input value={this.state.value} onChange={this.handleChange} placeholder='Search by Zipcode or City' style={{marginLeft:'40%', marginTop:'25px'}} />
+        <input value={this.state.value} onChange={this.handleChange} placeholder='Search by Zipcode or City'
+            style={{marginLeft:'40%', marginTop:'25px'}} />
         <button type='button' onClick={this.handleInput}>Search</button>
       </div>
     );
@@ -70,17 +71,19 @@ var VenueItem = React.createClass({
 
     getMoreInfo: function() {
         if (this.state.expanded) {
-            return <div style={{marginTop:'-15px', marginLeft:'25px'}}>
-                <span style={{color:'#2E8B57', fontSize:'18px'}}>More Info:</span>
-                <ul>
-                    <li style={{listStyleType: 'none'}}>Views: {this.state.views}</li>
-                    <li style={{listStyleType: 'none'}}>Address: {this.props.venue.address}</li>
-                    <li style={{listStyleType: 'none'}}>Type: {this.props.venue.type}</li>
-                    <li style={{listStyleType: 'none'}}>Contact: {this.props.venue.contact}</li>
-                </ul>
-                <CommentList comments={this.state.comments}/>
-                <CommentBox onComment={this.handleComment} />
-            </div>;
+            return (
+                <div style={{marginTop:'-15px', marginLeft:'25px'}}>
+                    <span style={{color:'#2E8B57', fontSize:'18px'}}>More Info:</span>
+                    <ul>
+                        <li style={{listStyleType: 'none'}}>Views: {this.state.views}</li>
+                        <li style={{listStyleType: 'none'}}>Address: {this.props.venue.address}</li>
+                        <li style={{listStyleType: 'none'}}>Type: {this.props.venue.type}</li>
+                        <li style={{listStyleType: 'none'}}>Contact: {this.props.venue.contact}</li>
+                    </ul>
+                    <CommentList comments={this.state.comments}/>
+                    <CommentBox onComment={this.handleComment} />
+                </div>
+            );
         } else {
             return null;
         }
@@ -111,10 +114,11 @@ var VenueItem = React.createClass({
 
 var CommentList = React.createClass({
     render: function() {
-        return(
+        return (
             <div style={{marginTop:'8px'}}>
                 <span style={{color:'#2E8B57', fontSize:'18px'}}>Comments:</span>
-                <div style={{marginTop: '8px', marginBottom:'10px', height:'400px', width:'504px', overflowY:'auto', border:'2px solid #2E8B57'}}>
+                <div style={{marginTop: '8px', marginBottom:'10px', height:'400px', width:'504px',
+                    overflowY:'auto', border:'2px solid #2E8B57'}}>
                     {this.props.comments.map((c) => {
                         return <div style={{width:'448px', height:'75px', border:'1px solid #000', overflowY:'auto',
                          marginTop:'1px', marginLeft:'18px'}}>{c.comment}<br></br>
@@ -123,7 +127,7 @@ var CommentList = React.createClass({
                     })}
                 </div>
             </div>
-        )
+        );
     }
 });
 
@@ -151,12 +155,14 @@ var CommentBox = React.createClass({
         return (
             <form>
                 <div>
-                    Name: <input onChange={this.handleNameChange} placeholder='Enter name' style={{marginBottom:'3px'}} /> <br></br>
-                    <textarea placeholder='Enter a comment here.' id='comments' rows='4' cols='50' onChange={this.handleChange} ></textarea>
+                    Name: <input onChange={this.handleNameChange} placeholder='Enter name' style={{marginBottom:'3px'}} />
+                    <br></br>
+                    <textarea placeholder='Enter a comment here.' id='comments' rows='4' cols='50'
+                        onChange={this.handleChange} ></textarea>
                 </div>
                 <button type='button' onClick={this.props.onComment.bind(null, this)}>Comment</button>
             </form>
-        )
+        );
     }
 });
 

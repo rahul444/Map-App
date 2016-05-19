@@ -1,0 +1,27 @@
+{
+  "name": "venue_search",
+  "version": "1.0.0",
+  "description": "Venue searching and commenting application",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rahul444/Map-App.git"
+  },
+  "author": "Rahul Bhatt",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rahul444/Map-App/issues"
+  },
+  "dependencies": {
+    "express": "4.13.x",
+    "https": "1.0.0",
+    "querystring": "0.2.0",
+    "mysql": "2.10.2",
+    "async": "2.0.x"
+  },
+  "homepage": "https://github.com/rahul444/Map-App#readme"
+}
