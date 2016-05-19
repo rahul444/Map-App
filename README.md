@@ -1,6 +1,11 @@
 # Map-App
 Simple venue searching and commenting app built using node.js and react.js
 
+## Usage:
+1. Enter a location to search either by zipcode or city name
+2. Click on a venue to learn more about the venue and view comments
+3. Comment on a venue by entering your name and a comment
+
 ## Running Locally:
 1. Clone the repo to your computer
 2. Run the command `npm install`
