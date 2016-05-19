@@ -3,6 +3,7 @@ app = express();
 var http = require('https');
 var escapeStr = require('querystring');
 var mysql = require('mysql');
+var async = require('async');
 app.use('/', express.static(__dirname + '/'));
 app.listen(8000);
 
@@ -23,7 +24,7 @@ connection.connect(function(err) {
 });
 
 app.get('/views', function(req, res) {
-    var name = req['query']['venueName'];
+    var name = escapeStr.escape(req['query']['venueName']);
     connection.query("INSERT INTO Views (`venueName`, `views`) VALUES (" + "'" + name + "', " + "2) ON DUPLICATE KEY UPDATE views = views + 1;",
         function(err, result) {
             if (err) {
@@ -38,7 +39,7 @@ app.get('/views', function(req, res) {
 
 app.get('/comment', function(req, res) {
     var comment = {
-        venueName: req['query']['venue'],
+        venueName: escapeStr.escape(req['query']['venue']),
         name: req['query']['name'],
         comment: req['query']['comment'],
         time: req['query']['id']
@@ -71,23 +72,14 @@ app.get('/search', function(req, res) {
         });
         res2.on('end', function() {
             var arr = [];
+            var updatedArr = [];
             if (res2.statusCode == 200) {
-                // TODO put comments associated with venue into data object
                 var data = JSON.parse(str);
                 var venues = data['response']['venues'];
-                // var commentList = getCommentList(venues);
-                // var viewList = getViewList(venues);
                 for (var i = 0; i < venues.length; i++) {
                     var venue = venues[i];
                     var location = {};
                     if (venue['location']['address'] && venue['categories'][0]) {
-                        // SET FROM DB
-                        location['comments'] = [{name: 'Josh', comment: 'I love the city', id: 2}, {name: venue['name'], comment:'comment num 1', id: 1}];
-                        location['views'] = 1;
-                        // location['comments'] = commentList[i];
-                        // location['views'] = viewList[i];
-
-
                         location['name'] = venue['name'];
                         location['address'] = venue['location']['address'];
                         location['type'] = venue['categories'][0]['name'];
@@ -99,10 +91,56 @@ app.get('/search', function(req, res) {
                         arr.push(location);
                     }
                 }
+
+                var newArr = [];
+                async.each(arr, function(venue, callback){
+                    getComments(venue, function(err, comments){
+                        venue['comments'] = comments;
+                    });
+                    getViews(venue, function(err, views){
+                        venue['views'] = views;
+                        newArr.push(venue);
+                        callback();
+                    });
+                }, function(err) {
+                    res.send(newArr);
+                });
             }
-            res.send(arr);
+            // res.send(arr);
         });
     }).on('error', function(e) {
         console.log("Got error: " + e.message);
     });
 });
+
+
+function getComments(venue, done) {
+    var commentList = [];
+    connection.query("SELECT * FROM Comments WHERE venueName = '" + escapeStr.escape(venue['name']) + "' ORDER BY time DESC", function(err, result){
+        if (err) {
+            console.error(err);
+            return done(err);
+        } else {
+            for (var i = 0; i < result.length; i++) {
+                var commentObj = {name: result[i].name, comment: result[i].comment, id: result[i].time};
+                commentList.push(commentObj);
+            }
+            return done(null, commentList);
+        }
+    });
+}
+
+function getViews(venue, done) {
+    connection.query("SELECT * FROM Views WHERE venueName = '" + escapeStr.escape(venue['name']) + "'", function(err, result) {
+        if (err) {
+            console.error(err);
+            return done(err);
+        } else {
+            if (result[0]) {
+                return done(null, result[0].views);
+            } else {
+                return done(null, 1);
+            }
+        }
+    });
+}
