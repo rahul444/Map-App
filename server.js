@@ -31,7 +31,6 @@ app.get('/views', function(req, res) {
                 console.error(err);
                 res.send('FAILURE: Views not uploaded');
             } else {
-                // console.log(result);
                 res.send('SUCCESS: Views updated');
             }
         });
@@ -49,7 +48,6 @@ app.get('/comment', function(req, res) {
         if (err) {
             console.error(err);
         } else {
-            // console.log(result);
             res.send('SUCCESS Comment updated');
         }
     });
@@ -106,7 +104,6 @@ app.get('/search', function(req, res) {
                     res.send(newArr);
                 });
             }
-            // res.send(arr);
         });
     }).on('error', function(e) {
         console.log("Got error: " + e.message);
@@ -130,6 +127,7 @@ function getComments(venue, done) {
     });
 }
 
+// ASYNC Method
 function getViews(venue, done) {
     connection.query("SELECT * FROM Views WHERE venueName = '" + escapeStr.escape(venue['name']) + "'", function(err, result) {
         if (err) {
@@ -139,7 +137,7 @@ function getViews(venue, done) {
             if (result[0]) {
                 return done(null, result[0].views);
             } else {
-                return done(null, 1);
+                return done(null, 0);
             }
         }
     });

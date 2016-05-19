@@ -47,7 +47,7 @@ var VenueItem = React.createClass({
     },
 
     expandInfo: function() {
-        if (this.state.expanded === false) {
+        if (!this.state.expanded) {
             incrementViews(this.props.venue.name, this.state.views + 1);
             this.setState({
                 expanded: true,
@@ -94,9 +94,7 @@ var VenueItem = React.createClass({
         } else {
             var commentId = this.state.comments.length + 1;
             comment(this.props.venue.name, comp.state.name, comp.state.value, this.state.views, commentId);
-            // adds comment object to commentlist component
             this.updateCommentList({name: comp.state.name, comment: comp.state.value, id: commentId});
-            // TODO implment rendering comments from db on reload
         }
     },
 
@@ -164,6 +162,15 @@ var CommentBox = React.createClass({
 
 ReactDOM.render(<SearchBar />, document.getElementById('app'));
 
+function displayLocations(data) {
+    ReactDOM.render(
+        <div>
+            <SearchBar />
+            <VenueList list={data} />
+        </div>,
+        document.getElementById('app'));
+}
+
 
 function search(query) {
     $.get('/search', {searchQuery : query},
@@ -191,13 +198,4 @@ function incrementViews(name, views) {
             console.log(res);
         }
     );
-}
-
-function displayLocations(data) {
-    ReactDOM.render(
-        <div>
-            <SearchBar />
-            <VenueList list={data} />
-        </div>,
-        document.getElementById('app'));
 }
