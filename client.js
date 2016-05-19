@@ -1,3 +1,4 @@
+// Component to allow user to enter a search query
 var SearchBar = React.createClass({
   getInitialState: function() {
     return {
@@ -27,6 +28,7 @@ var SearchBar = React.createClass({
   }
 });
 
+// Component to display a list of venues based on search query
 var VenueList = React.createClass({
     render: function() {
         return (
@@ -42,6 +44,7 @@ var VenueList = React.createClass({
     }
 });
 
+// Component that keeps track of all information for a venue
 var VenueItem = React.createClass({
     getInitialState: function() {
         return {exanded: false, views: this.props.venue.views, comments: this.props.venue.comments};
@@ -112,6 +115,7 @@ var VenueItem = React.createClass({
     }
 });
 
+// Component to display all comments for a given venue
 var CommentList = React.createClass({
     render: function() {
         return (
@@ -131,6 +135,7 @@ var CommentList = React.createClass({
     }
 });
 
+// Component for entering and submitting comments
 var CommentBox = React.createClass({
     getInitialState: function() {
       return {
@@ -178,6 +183,7 @@ function displayLocations(data) {
 }
 
 
+// Gets venues for the query from backend
 function search(query) {
     $.get('/search', {searchQuery : query},
       function(data) {
@@ -190,6 +196,7 @@ function search(query) {
     );
 }
 
+// Sends new comment for a venue to the backend
 function comment(venueName, user, text, views, id) {
     $.get('/comment', {venue: venueName, name: user, comment: text, views: views, id: id},
         function(res) {
@@ -198,6 +205,7 @@ function comment(venueName, user, text, views, id) {
     );
 }
 
+// Sends new number of views for a venue to the backend
 function incrementViews(name, views) {
     $.get('/views', {venueName: name, views: views},
         function(res) {

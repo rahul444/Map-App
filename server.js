@@ -23,6 +23,7 @@ connection.connect(function(err) {
   }
 });
 
+// Increments the number of views by one for a venue in the database
 app.get('/views', function(req, res) {
     var name = escapeStr.escape(req['query']['venueName']);
     connection.query("INSERT INTO Views (`venueName`, `views`) VALUES (" + "'" + name + "', " + "2)" +
@@ -37,6 +38,7 @@ app.get('/views', function(req, res) {
         });
 });
 
+// Adds comment for a venue into the database
 app.get('/comment', function(req, res) {
     var comment = {
         venueName: escapeStr.escape(req['query']['venue']),
@@ -54,6 +56,7 @@ app.get('/comment', function(req, res) {
     });
 });
 
+// Returns venues using foursquare API based on searchQuery
 app.get('/search', function(req, res) {
     var searchQuery = escapeStr.escape(req['query']['searchQuery']);
 
@@ -113,7 +116,7 @@ app.get('/search', function(req, res) {
     });
 });
 
-
+// ASYNC Method that gets comments associated with a venue from database
 function getComments(venue, done) {
     var commentList = [];
     connection.query("SELECT * FROM Comments WHERE venueName = '" + escapeStr.escape(venue['name']) +
@@ -131,7 +134,7 @@ function getComments(venue, done) {
     });
 }
 
-// ASYNC Method
+// ASYNC Method that gets views associated with a venue from database
 function getViews(venue, done) {
     connection.query("SELECT * FROM Views WHERE venueName = '" + escapeStr.escape(venue['name']) +
         "'", function(err, result) {
